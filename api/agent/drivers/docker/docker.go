@@ -409,6 +409,7 @@ func (drv *DockerDriver) CreateCookie(ctx context.Context, task drivers.Containe
 	cookie.configureULimits(log)
 	cookie.configureTmpFs(log)
 	cookie.configureVolumes(log)
+	cookie.configureVolumes2(log)
 	cookie.configureWorkDir(log)
 	cookie.configureIOFS(log)
 	cookie.configureNetwork(log)

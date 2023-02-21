@@ -200,6 +200,17 @@ func (c *cookie) configureIOFS(log logrus.FieldLogger) {
 	log.WithFields(logrus.Fields{"bind": bind, "call_id": c.task.Id()}).Debug("setting bind")
 }
 
+func (c *cookie) configureVolumes2(log logrus.FieldLogger) {
+	if c.opts.Config.Volumes == nil {
+		c.opts.Config.Volumes = map[string]struct{}{}
+	}
+
+	hostDir := "/tmp/cracdata"
+	containerDir := "/cracdata"
+	c.opts.Config.Volumes[containerDir] = struct{}{}
+	mapn := fmt.Sprintf("%s:%s", hostDir, containerDir)
+	c.opts.HostConfig.Binds = append(c.opts.HostConfig.Binds, mapn)
+}
 func (c *cookie) configureVolumes(log logrus.FieldLogger) {
 	if len(c.task.Volumes()) == 0 {
 		return
@@ -320,9 +331,10 @@ func (c *cookie) configureSecurity(log logrus.FieldLogger) {
 	if c.drv.conf.DisableUnprivilegedContainers {
 		return
 	}
-	c.opts.Config.User = FnDockerUser
-	c.opts.HostConfig.CapDrop = []string{"all"}
-	c.opts.HostConfig.SecurityOpt = []string{"no-new-privileges"}
+	//c.opts.Config.User = FnDockerUser
+	//c.opts.HostConfig.CapDrop = []string{"all"}
+	c.opts.HostConfig.Privileged = true
+	//c.opts.HostConfig.SecurityOpt = []string{"no-new-privileges"}
 	log.WithFields(logrus.Fields{"user": c.opts.Config.User,
 		"CapDrop": c.opts.HostConfig.CapDrop, "SecurityOpt": c.opts.HostConfig.SecurityOpt, "call_id": c.task.Id()}).Debug("setting security")
 }
